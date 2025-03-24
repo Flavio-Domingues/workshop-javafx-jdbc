@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -108,10 +110,28 @@ public class SellerFormController implements Initializable {
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
 			exception.addError("name", "Campo obrigatório!");
 		}
+		obj.setName(txtName.getText());
+		
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			exception.addError("email", "Campo obrigatório!");
+		}
+		obj.setEmail(txtEmail.getText());
+		if(dpBirthdate.getValue()== null) {
+			exception.addError("birthDate", "campo obrigatório");
+		}else {
+		Instant instant = Instant.from(dpBirthdate.getValue().atStartOfDay(ZoneId.systemDefault()));
+		obj.setBirthDate(Date.from(instant));
+		}
+		if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+			exception.addError("baseSalary", "Campo obrigatório!");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+		
+		obj.setDepartment(comboBoxDepartment.getValue());
 		if (exception.getError().size() > 0) {
 			throw exception;
 		}
-		obj.setName(txtName.getText());
+		
 		return obj;
 	}
 
@@ -168,9 +188,11 @@ public class SellerFormController implements Initializable {
 	}
 	public void setMessageError(Map<String, String> errors) {
 		Set<String> filds = errors.keySet();
-		if (filds.contains("name")) {
-			IblErrorName.setText(errors.get("name"));
-		}
+				
+		IblErrorName.setText(filds.contains("name")?errors.get("name"): "");
+		IblErrorEmail.setText(filds.contains("email")?errors.get("email"): "");
+		IblErrorBirthDate.setText(filds.contains("birthDate")?errors.get("birthDate"): "");
+		IblErrorBaseSalary.setText(filds.contains("baseSalary")?errors.get("baseSalary"): "");
 	}
 	public void loadAssociatedObjects() {
 		if(departmentService == null) {
